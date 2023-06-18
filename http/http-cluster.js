@@ -5,15 +5,6 @@ const app = new Server({ instance: 0 });
 
 const router = new Router();
 
-let count = 0;
-process.on('message', (message) => {
-  // windows 下使用 pipe 通信, 不是 ipc 所以收不到
-  if (message === ' count') {
-    count++;
-    console.log('visit count: ', count);
-  }
-});
-
 app.use(async (ctx, next) => {
   process.send('count');
   await next();
@@ -32,7 +23,15 @@ app.use(
   })
 );
 
+let count = 0;
+process.on('message', (message) => {
+  if (message === 'count') {
+    count++;
+    console.log('visit count: ', count);
+  }
+});
+
 app.listen({
-  port: 9090,
+  port: 9091,
   host: '0.0.0.0',
 });
